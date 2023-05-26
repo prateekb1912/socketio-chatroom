@@ -27,7 +27,10 @@ io.on("connection", (socket) => {
     io.emit("message", "User has left the room");
   });
 
-  // Broadcast to all --> io.emit()
+  // Listen for chat-message
+  socket.on('chat-message', (msg)=>{
+    io.emit('message', msg);
+  })
 });
 
 server.listen(PORT, () => `Server running on http://localhost:${PORT}`);
