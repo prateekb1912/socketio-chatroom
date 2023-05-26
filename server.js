@@ -4,7 +4,7 @@ const express = require("express");
 const socketio = require("socket.io");
 
 const app = express();
-const server = http.createServer(app)
+const server = http.createServer(app);
 const io = socketio(server);
 
 const PORT = process.env.PORT || 3000;
@@ -13,8 +13,21 @@ const PORT = process.env.PORT || 3000;
 app.use(express.static(path.join(__dirname, "public")));
 
 // Run when client connects
-io.on('connection', socket=>{
-    console.log('New WebSocket connection')
-})
+io.on("connection", (socket) => {
+  console.log("New WebSocket connection");
+
+  // Emit to single client
+  socket.emit("message", "Welcome to ChatRoom");
+
+  // Broadcast on user connect - to all except the client
+  socket.broadcast.emit("message", "User has joined the chat");
+
+  // Disconncection broadcast
+  socket.on("disconnect", () => {
+    io.emit("message", "User has left the room");
+  });
+
+  // Broadcast to all --> io.emit()
+});
 
 server.listen(PORT, () => `Server running on http://localhost:${PORT}`);
